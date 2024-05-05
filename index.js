@@ -42,7 +42,7 @@ async function run() {
             const id = req.params.id
             const query = { _id: new ObjectId(id) }
             const options = {
-                projections: {
+                projection: {
                     title: 1, price: 1, service_id: 1, img: 1
                 }
             }
@@ -77,6 +77,19 @@ async function run() {
             res.send(result)
         })
 
+        app.patch('/bookings/:id', async (req, res) => {
+            const id = req.params.id
+            const filter = { _id: new ObjectId(id) }
+            const updatedBook = req.body;
+            console.log(updatedBook)
+            const updateDoc = {
+                $set: {
+                    status: updatedBook.status
+                }
+            };
+            const result = await bookingCollection.updateOne(filter, updateDoc)
+            res.send(result)
+        })
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
