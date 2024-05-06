@@ -55,6 +55,13 @@ async function run() {
 
         })
 
+        //after user logout site then clear his token from browser application cookie
+        app.post('/logout', async (req, res) => {
+            const user = req.body;
+
+            res.clearCookie('token', { maxAge: 0 })
+                .send({ success: true })
+        })
 
         //service related api
         app.get('/service', async (req, res) => {
