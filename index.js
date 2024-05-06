@@ -39,8 +39,19 @@ const logger = (req, res, next) => {
 
 const verifyToken = (req, res, next) => {
     const token = req?.cookies?.token
-    console.log('token in the middleware', token)
-    next()
+    // console.log('token in the middleware', token)
+    //no token available
+    if (!token) {
+        return res.status(401).send({ message: 'unauthorized access' })
+    }
+    jwt.verify(token, process.env.ACCES_TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).send({ message: 'unauthorized access' })
+        }
+        req.user = decoded;
+        next()
+    })
+    // next()
 }
 
 async function run() {
@@ -98,7 +109,10 @@ async function run() {
         //onno vabe email diye data get
         app.get('/bookings', logger, verifyToken, async (req, res) => {
             console.log(req.query.email)
-
+            console.log('token owner info', req.user)
+            if (req.user.email !== req.query.email) {
+                return res.status(403).send({ message: 'forbbiden access' })
+            }
             let query = {}
             if (req.query?.email) {
                 query = { email: req.query.email }
