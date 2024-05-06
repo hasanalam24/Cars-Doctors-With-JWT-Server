@@ -37,7 +37,11 @@ const logger = (req, res, next) => {
     next()
 }
 
-
+const verifyToken = (req, res, next) => {
+    const token = req?.cookies?.token
+    console.log('token in the middleware', token)
+    next()
+}
 
 async function run() {
     try {
@@ -92,7 +96,7 @@ async function run() {
 
         //booking service
         //onno vabe email diye data get
-        app.get('/bookings', logger, async (req, res) => {
+        app.get('/bookings', logger, verifyToken, async (req, res) => {
             console.log(req.query.email)
 
             let query = {}
