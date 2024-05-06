@@ -8,7 +8,12 @@ const port = process.env.PORT || 5000;
 
 //middleware
 
-app.use(cors())
+app.use(cors({
+    origin: [
+        'http://localhost:5173', 'http://localhost:5174'
+    ],
+    credentials: true
+}))
 app.use(express.json())
 
 
@@ -36,11 +41,18 @@ async function run() {
         //auth related /jwt api
         app.post('/jwt', async (req, res) => {
             const user = req.body
-            console.log('user for token', user)
-            //terminal theke token generate
+            console.log('token create with email', user)
             const token = jwt.sign(user, process.env.ACCES_TOKEN_SECRET, { expiresIn: '1h' })
 
-            res.send({ token })
+            // res.send({token}) eta diye browser a console dekhat jonno korbe then follow under the res.send
+
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none'
+            })
+                .send({ success: true })
+
         })
 
 
